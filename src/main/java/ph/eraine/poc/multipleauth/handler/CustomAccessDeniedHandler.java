@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+import ph.eraine.poc.multipleauth.constant.ErrorCode;
+import ph.eraine.poc.multipleauth.dto.ApiErrorDetail;
 import ph.eraine.poc.multipleauth.dto.ApiErrorResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,9 +22,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException exception) throws IOException {
+        ApiErrorResponse apiResponse = new ApiErrorResponse();
+        apiResponse.add(new ApiErrorDetail(ErrorCode.RES40301.name(), exception.getLocalizedMessage()));
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter()
-                .write(objectMapper.writeValueAsString(new ApiErrorResponse(exception.getLocalizedMessage())));
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
     }
 
 }

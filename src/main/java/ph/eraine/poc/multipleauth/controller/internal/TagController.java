@@ -11,24 +11,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ph.eraine.poc.multipleauth.dto.ApiResponse;
-import ph.eraine.poc.multipleauth.dto.CreateGame;
+import ph.eraine.poc.multipleauth.dto.CreateTag;
 import ph.eraine.poc.multipleauth.dto.ViewGame;
-import ph.eraine.poc.multipleauth.service.GameService;
+import ph.eraine.poc.multipleauth.dto.ViewTag;
+import ph.eraine.poc.multipleauth.exception.ValidationException;
+import ph.eraine.poc.multipleauth.service.TagService;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("/v1/internal/games")
-public class GameController {
+@RequestMapping("/v1/internal/tags")
+public class TagController {
 
-    private final GameService service;
+    private final TagService service;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Integer>> save(@RequestBody CreateGame request) {
+    public ResponseEntity<ApiResponse<Integer>> save(@RequestBody CreateTag request) throws ValidationException {
         // TODO: move request logging to filter
-        log.info("Request received to save new game: {}", request.toString());
+        log.info("Request received to save new tag: {}", request.toString());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -36,9 +38,9 @@ public class GameController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ViewGame>>> viewAll(@RequestParam(required = false) Integer page,
+    public ResponseEntity<ApiResponse<List<ViewTag>>> viewAll(@RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer limit) {
-        log.info("Request received to view games. [page: {}] [limit: {}]", page, limit);
+        log.info("Request received to view tags. [page: {}] [limit: {}]", page, limit);
         return ResponseEntity.ok(new ApiResponse<>(service.viewAll(page, limit)));
     }
 

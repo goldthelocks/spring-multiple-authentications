@@ -46,6 +46,8 @@ public class SecurityConfig {
                     .authorizeRequests()
                     .antMatchers("/v1/internal/games")
                     .hasAnyAuthority(InternalUserRole.SUPER_ADMIN, InternalUserRole.CONTENT_IMPORTER)
+                    .antMatchers("/v1/internal/tags")
+                    .hasAnyAuthority(InternalUserRole.SUPER_ADMIN, InternalUserRole.CONTENT_IMPORTER)
                     .antMatchers("/v1/internal/**").hasAuthority(InternalUserRole.SUPER_ADMIN)
                     .and()
                     .sessionManagement()

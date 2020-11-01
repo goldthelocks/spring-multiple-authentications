@@ -9,6 +9,6 @@ public interface GameService {
 
     Integer save(CreateGame request);
 
-    List<ViewGame> viewAll();
+    List<ViewGame> viewAll(Integer page, Integer limit);
 
 }

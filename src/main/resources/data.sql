@@ -12,3 +12,7 @@ INSERT INTO USER_ROLE(user_id, role_id) VALUES(2,1);
 INSERT INTO USER_ROLE(user_id, role_id) VALUES(3,2);
 INSERT INTO USER_ROLE(user_id, role_id) VALUES(4,2);
 INSERT INTO USER_ROLE(user_id, role_id) VALUES(5,2);
+
+INSERT INTO TAG(name) VALUES('Life Sim');
+INSERT INTO TAG(name) VALUES('Simulation');
+INSERT INTO TAG(name) VALUES('Typing');

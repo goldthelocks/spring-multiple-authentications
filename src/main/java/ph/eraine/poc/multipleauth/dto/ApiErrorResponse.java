@@ -1,16 +1,23 @@
 package ph.eraine.poc.multipleauth.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@SuperBuilder
+@Builder
 public class ApiErrorResponse {
 
-    private String message;
+    private List<ApiErrorDetail> errors = new ArrayList<>();
+
+    public void add(ApiErrorDetail error) {
+        errors.add(error);
+    }
 
 }

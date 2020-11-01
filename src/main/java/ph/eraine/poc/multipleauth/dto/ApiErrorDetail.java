@@ -1,16 +1,15 @@
 package ph.eraine.poc.multipleauth.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
-public class ApiResponse<T> {
+public class ApiErrorDetail {
 
-    private T data;
+    private String code;
+    private String message;
 
 }

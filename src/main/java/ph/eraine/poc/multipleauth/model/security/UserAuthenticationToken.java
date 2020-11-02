@@ -8,7 +8,7 @@ import java.util.Collection;
 
 public class UserAuthenticationToken extends AbstractAuthenticationToken {
 
-    private Object principal;
+    private final Object principal;
 
     public UserAuthenticationToken(String token) {
         super(null);

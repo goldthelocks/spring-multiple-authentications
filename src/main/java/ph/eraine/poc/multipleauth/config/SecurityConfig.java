@@ -9,8 +9,11 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import ph.eraine.poc.multipleauth.filter.ApiUserAuthenticationFilter;
 import ph.eraine.poc.multipleauth.handler.CustomAccessDeniedHandler;
 import ph.eraine.poc.multipleauth.handler.CustomAuthenticationEntryPoint;
+import ph.eraine.poc.multipleauth.service.ApiUserAuthManager;
 import ph.eraine.poc.multipleauth.service.InternalUserAuthProvider;
 
 @EnableWebSecurity
@@ -19,7 +22,7 @@ public class SecurityConfig {
     @RequiredArgsConstructor
     @Configuration
     @Order(1)
-        public static class InternalSecurityConfig extends WebSecurityConfigurerAdapter {
+    public static class InternalSecurityConfig extends WebSecurityConfigurerAdapter {
 
         private final InternalUserAuthProvider userAuthProvider;
         private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -32,16 +35,16 @@ public class SecurityConfig {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            /* This intercepts all requests with /v1/internal/** prefix and authenticates them using basic auth. */
+            /* Intercepts all requests with /v1/internal/** prefix and authenticates them using basic auth. */
             http
                     .csrf().disable()
                     .formLogin().disable()
                     .antMatcher("/v1/internal/**")
                     .exceptionHandling()
                     .accessDeniedHandler(accessDeniedHandler)
+                    .authenticationEntryPoint(authenticationEntryPoint)
                     .and()
                     .httpBasic()
-                    .authenticationEntryPoint(authenticationEntryPoint)
                     .and()
                     .authorizeRequests()
                     .antMatchers("/v1/internal/games")
@@ -60,14 +63,27 @@ public class SecurityConfig {
     @Configuration
     public static class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
 
-        @Override
-        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            super.configure(auth);
-        }
+        private final ApiUserAuthManager userAuthManager;
+        private final CustomAccessDeniedHandler accessDeniedHandler;
+        private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            super.configure(http);
+            /* Default authentication */
+            http
+                    .csrf().disable()
+                    .formLogin().disable()
+                    .exceptionHandling()
+                    .accessDeniedHandler(accessDeniedHandler)
+                    .authenticationEntryPoint(authenticationEntryPoint)
+                    .and()
+                    .httpBasic().disable()
+                    .authorizeRequests()
+                    .anyRequest().authenticated()
+                    .and()
+                    .addFilterBefore(apiUserAuthenticationFilter(), AnonymousAuthenticationFilter.class)
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         }
 
         @Override
@@ -75,6 +91,13 @@ public class SecurityConfig {
             web.ignoring()
                     .antMatchers("/h2-console/**");
         }
+
+        protected ApiUserAuthenticationFilter apiUserAuthenticationFilter() {
+            ApiUserAuthenticationFilter filter = new ApiUserAuthenticationFilter();
+            filter.setAuthenticationManager(userAuthManager);
+            return filter;
+        }
+
     }
 
     private static class InternalUserRole {
